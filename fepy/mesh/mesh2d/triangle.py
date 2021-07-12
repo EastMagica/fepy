@@ -1,27 +1,23 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 # @author  : east
-# @time    : 2021/7/10 15:08
-# @file    : mesh1d.py
+# @time    : 2021/7/12 21:01
+# @file    : triangle.py
 # @project : fepy
 # software : PyCharm
 
 import abc
 
-import numpy as np
-
-from fepy.mesh.basic import parse_n, parse_box, uniform_space
+from fepy.mesh.basic import parse_box, parse_n, uniform_space
 
 
 # Meta Class
 # ----------
 
-class IntervalMesh(metaclass=abc.ABCMeta):
-    def __init__(self, *args, **kwargs):
-        self._ndim = 1
-        self._points = None
-        self._simplices = None
-        self._boundary = None
+class TriangularMesh(metaclass=abc.ABCMeta):
+    def __init__(self):
+        self._ndim = 2
+        self._stri = None
 
     @property
     def ndim(self):
@@ -29,7 +25,7 @@ class IntervalMesh(metaclass=abc.ABCMeta):
 
     @property
     def npoints(self):
-        return self._points.shape[0]
+        return self._stri.npoints
 
     @property
     def points(self):
@@ -41,23 +37,23 @@ class IntervalMesh(metaclass=abc.ABCMeta):
         self._points: np.ndarray, (N, Dim)
             节点坐标列表.
         """
-        return self._points
+        return self._stri.points
 
     @property
     def nsimplices(self):
-        return self._simplices.shape[0]
+        return self._stri.nsimplex
 
     @property
     def simplices(self):
         """
-        获取单纯形节点编号列表.
+        获取三角形节点编号列表.
 
         Returns
         -------
         self._simplices: np.ndarray, (M, Dim+1)
             单纯形节点编号列表.
         """
-        return self._simplices
+        return self._stri.simplices
 
     @abc.abstractmethod
     def create(self, *args, **kwargs):
@@ -70,24 +66,16 @@ class IntervalMesh(metaclass=abc.ABCMeta):
 # Classes
 # -------
 
-class UniformIntervalMesh(IntervalMesh):
+class UnitSquareMesh(TriangularMesh):
     """
-    一维规则网格.
+    二维规则三角网格.
     """
     def __init__(self, box=None, n=100):
         super().__init__()
-        if box is None:
-            box = [0, 1]
         self.create(box, n)
 
     def create(self, box, n):
-        self._points = uniform_space(box, n+1)
-        self._simplices = np.vstack([
-            np.arange(n), np.arange(1, n+1)
-        ])
-        self._boundary = np.array([0, n])
-
-
-
-
-
+        # TODO: Implemented method
+        box = parse_box(box)
+        n = parse_n(n)
+        self._stri = uniform_space(box, n)

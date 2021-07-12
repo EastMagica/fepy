@@ -14,6 +14,7 @@ import numpy as np
 
 def is_ndarray(*args):
     """类型转换: ndarray类型"""
+    np.asarray
     ndarray_list = [np.array(arr) for arr in args]
     if len(ndarray_list) == 1:
         return ndarray_list[0]
