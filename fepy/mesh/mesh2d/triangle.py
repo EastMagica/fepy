@@ -75,7 +75,7 @@ class UnitSquareMesh(TriangularMesh):
         self.create(box, n)
 
     def create(self, box, n):
-        # TODO: Implemented method
+        # TODO: tri mesh create method
         box = parse_box(box)
         n = parse_n(n)
         self._stri = uniform_space(box, n)

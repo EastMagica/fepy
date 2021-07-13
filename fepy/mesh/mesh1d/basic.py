@@ -18,10 +18,12 @@ from fepy.mesh.basic import uniform_space, MetaMesh
 
 class MetaIntervalMesh(MetaMesh, metaclass=abc.ABCMeta):
     def __init__(self, *args, **kwargs):
+        super().__init__()
         self._ndim = 1
         self._points = None
         self._simplices = None
         self._neighbors = None
+        self._boundary_points = None
 
     @property
     def ndim(self):
@@ -62,6 +64,14 @@ class MetaIntervalMesh(MetaMesh, metaclass=abc.ABCMeta):
     @property
     def neighbors(self):
         return self._neighbors
+
+    @property
+    def boundary_index(self):
+        return self._boundary_points
+
+    @staticmethod
+    def area(v):
+        return np.abs(v[1] - v[0])
 
     @abc.abstractmethod
     def create(self, *args, **kwargs):
@@ -106,4 +116,7 @@ class UniformIntervalMesh(MetaIntervalMesh):
                 -1
             ]),
         ]).T
+        self._boundary_points = np.array([
+            0, n - 1
+        ])
         return option

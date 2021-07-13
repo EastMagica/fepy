@@ -114,6 +114,9 @@ def uniform_space(box, n, opt_out=False):
 # ------------
 
 class MetaMesh(metaclass=abc.ABCMeta):
+    def __init__(self):
+        self.values = None
+
     @property
     @abc.abstractmethod
     def ndim(self):
@@ -143,3 +146,12 @@ class MetaMesh(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def neighbors(self):
         raise NotImplementedError
+
+    @staticmethod
+    @abc.abstractmethod
+    def area(v):
+        raise NotImplementedError
+
+    def save(self):
+        # TODO: mesh save method
+        ...

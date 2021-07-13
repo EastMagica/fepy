@@ -7,7 +7,6 @@
 # software : PyCharm
 
 import numpy as np
-from fepy.basic.gaussian import MetaGaussian
 
 
 # Functions
@@ -22,8 +21,4 @@ def area(*points):
     return pr - pl
 
 
-class Gaussian(MetaGaussian):
-    def local_to_global(self, global_v):
-        global_p = self.points * (global_v[1] - global_v[0]) + global_v[0]
-        global_w = area(*global_v) / self.area * self.weight
-        return global_p, global_w
+

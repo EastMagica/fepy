@@ -6,13 +6,72 @@
 # @project : fepy
 # software : PyCharm
 
-from fepy.fem.fem1d import FEM1D
-from fepy.mesh.generator import UnitSquareMesh
-from fepy.boundary.boundary import Dirichlet
+import numpy as np
 
-FEM1D(
-    variation=None,
-    mesh=UnitSquareMesh(),
-    boundary=None
+import matplotlib.pyplot as plt
+
+from fepy.fem.fem1d import LinearFEM1D
+from fepy.mesh.mesh1d import UniformIntervalMesh
+from fepy.boundary.boundary import Dirichlet1D
+
+
+r"""
+1D Laplace Equations Example
+
+.. math::
+    
+    \begin{cases}
+        -\Delta u = \pi^2 \sin(\pi x) \\
+        u(0) = u(\pi) = 0
+    \end{cases}
+
+true solution is
+
+.. math::
+
+    u = \sin(\pi x)
+    
+"""
+
+
+def u_true(x):
+    return np.sin(np.pi * x)
+
+
+def f(x):
+    return np.pi**2 * np.sin(np.pi * x)
+
+
+def variation(basis_v, basis_g, gauss_p, gauss_w):
+    f_v = f(gauss_p.squeeze())
+    f_elem = np.dot(f_v * gauss_w, basis_v)
+    a_elem = np.dot(basis_g.T, basis_g) * np.sum(gauss_w)
+    return a_elem, f_elem
+
+
+fem = LinearFEM1D(
+    variation=variation,
+    mesh=UniformIntervalMesh(
+        box=[0, 1], n=1024+1
+    ),
+    boundary=Dirichlet1D(
+        np.array([0., 0.])
+    )
 )
 
+fem.run()
+
+# plots
+# -----
+
+fig, ax = plt.subplots(1, 2)
+
+ax[0].plot(fem.mesh.points.squeeze(), fem.mesh.values)
+ax[0].plot(np.linspace(0, 1, 100), u_true(np.linspace(0, 1, 100)), linestyle='--')
+
+ax[1].plot(
+    fem.mesh.points.squeeze(),
+    fem.mesh.values - u_true(fem.mesh.points.squeeze())
+)
+
+plt.show()

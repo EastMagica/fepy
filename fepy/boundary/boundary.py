@@ -10,28 +10,28 @@ import abc
 
 
 class Boundary(metaclass=abc.ABCMeta):
-    def __init__(self, mesh):
-        self.mesh = mesh
-
     @abc.abstractmethod
-    def process(self, mat_a, mat_f):
+    def process(self, mat_a, mat_f, mesh):
         raise NotImplementedError
 
 
-class Dirichlet(Boundary):
-    def process(self, mat_a, mat_f):
+class Dirichlet1D(Boundary):
+    def __init__(self, values):
+        self.values = values
+
+    def process(self, mat_a, mat_f, mesh):
         r"""边界条件处理
 
         Notes
         -----
         第一类(Dirichlet)边界条件.
         """
-        boundary = self.mesh.boundary_index
-        values = self.mesh.boundary_values
-        mat_f[boundary] = values
-        mat_a[:, boundary] = 0
-        mat_a[boundary, :] = 0
-        mat_a[boundary, boundary] = 1
+        bd_ind = mesh.boundary_index
+        print(f"{bd_ind=}")
+        mat_f[bd_ind] = self.values
+        mat_a[:, bd_ind] = 0
+        mat_a[bd_ind, :] = 0
+        mat_a[bd_ind, bd_ind] = 1
 
 
 class Neumann(Boundary):

@@ -5,5 +5,3 @@
 # @file    : __init__.py.py
 # @project : fepy
 # software : PyCharm
-
-from fepy.basic.basic import is_ndarray

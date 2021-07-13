@@ -8,21 +8,8 @@
 
 import numpy as np
 
-from fepy.basic import is_ndarray
-from fepy.basic.gaussian import load_gaussian
 from fepy.fem.basic import FEM
-
-
-# Functions
-# ---------
-
-def area(*points):
-    [pl, pr] = is_ndarray(points)
-    if (pl.ndim > 1) or (pr.ndim > 1):
-        raise ValueError('Input a needs to be a (N, 1) Matrix.')
-    elif pl.size != pr.size:
-        raise ValueError('Input matrices need to have same raw.')
-    return pr - pl
+from fepy.basic.gaussian import Gaussian1D
 
 
 # Classes
@@ -33,20 +20,36 @@ class LinearBasisMixIn(object):
     一维线性基函数
     """
     @staticmethod
-    def basis_grid(p, v):
-        p = is_ndarray(p).squeeze()
-        value = np.array([v[1] - p, p - v[0]]) / area(*v)
+    def basis_value(p, v, area):
+        r"""
+
+        .. math::
+
+            \phi_{L} =
+
+        Parameters
+        ----------
+        p
+        v
+        area
+
+        Returns
+        -------
+
+        """
+        p = np.asarray(p).squeeze()
+        value = np.array([v[1] - p, p - v[0]]) / area
         return value.T
 
     @staticmethod
-    def basis_value(p, v):
-        grid = np.array([[1], [-1]]) / area(*v)
+    def basis_grid(p, v, area):
+        grid = np.array([[1], [-1]]) / area
         return grid.T
 
 
 class LinearFEM1D(LinearBasisMixIn, FEM):
-    def __init__(self, variation, mesh, boundary, gaussian=3):
+    def __init__(self, variation, mesh, boundary, gaussian_n=3):
         super().__init__(variation, mesh, boundary)
-        self.gaussian = load_gaussian(gaussian, self.ndim)
-
-
+        self.ndim = 1
+        print("Load Gaussian in LInear FEM1D")
+        self.gaussian = Gaussian1D(gaussian_n, self.ndim)

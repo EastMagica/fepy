@@ -45,27 +45,26 @@ def fslove(a_mat, f_lst):
 # -------
 
 class FEM(metaclass=abc.ABCMeta):
-    def __init__(self, variation, mesh, boundary, gaussian):
+    def __init__(self, variation, mesh, boundary):
         """
 
         Parameters
         ----------
         mesh: MetaMesh
         boundary: Boundary
-        gaussian: Gaussian
         variation: Callable
         """
         self.ndim = None
         self.mesh = mesh
+        self.gaussian = None
         self.boundary = boundary
-        self.gaussian = gaussian
         self.variation = variation
         self.f = np.zeros(self.mesh.npoints)
         self.a = np.zeros((self.mesh.npoints, self.mesh.npoints))
 
     @staticmethod
     @abc.abstractmethod
-    def basis_value(p, v):
+    def basis_value(p, v, area):
         """
         basis function.
 
@@ -73,6 +72,7 @@ class FEM(metaclass=abc.ABCMeta):
         ----------
         p: any point in element
         v: element point
+        area: area of simplices
 
         Returns
         -------
@@ -82,7 +82,7 @@ class FEM(metaclass=abc.ABCMeta):
 
     @staticmethod
     @abc.abstractmethod
-    def basis_grid(p, v):
+    def basis_grid(p, v, area):
         """
         gradiant of basis function.
 
@@ -90,6 +90,7 @@ class FEM(metaclass=abc.ABCMeta):
         ----------
         p: any point in element
         v: element point
+        area: area of simplices
 
         Returns
         -------
@@ -134,10 +135,17 @@ class FEM(metaclass=abc.ABCMeta):
         此处:math:`A_i`的计算方法只针对
         右端项为:math:`\Delta u`的情形.
         """
-        gauss_p, gauss_w = self.gaussian.local_to_global(unit_v)
-        basis_v = self.basis_value(gauss_p, unit_v)
-        basis_g = self.basis_grid(gauss_p, unit_v)
-        a_elem, f_elem = self.variation(basis_v, basis_g, gauss_p, gauss_w)
+        area = self.mesh.area(unit_v)
+        gauss_p, gauss_w = self.gaussian.local_to_global(unit_v, area)
+        basis_v = self.basis_value(
+            gauss_p, unit_v, area
+        )
+        basis_g = self.basis_grid(
+            gauss_p, unit_v, area
+        )
+        a_elem, f_elem = self.variation(
+            basis_v, basis_g, gauss_p, gauss_w
+        )
         return a_elem, f_elem
 
     def run(self):
@@ -150,10 +158,8 @@ class FEM(metaclass=abc.ABCMeta):
         """
         print("> Assembly Matrix A and F...")
         self.assembly_af()
-        # print(f'> a_mat0:\n{self.a_mat}\n> f_lst0:\n{self.f_lst}')
         print("> Apply Boundary Conditions...")
-        self.boundary.process(self.a, self.f)
-        # print(f'> a_mat:\n{self.a_mat}\n> f_lst:\n{self.f_lst}')
+        self.boundary.process(self.a, self.f, self.mesh)
         print("> Solve Matrix U...")
         self.mesh.values = fslove(self.a, self.f)
 
