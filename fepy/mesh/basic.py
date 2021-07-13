@@ -6,8 +6,9 @@
 # @project : fepy
 # software : PyCharm
 
+import abc
+
 import numpy as np
-from scipy.spatial import Delaunay
 
 
 # Functions
@@ -57,14 +58,16 @@ def parse_n(n):
     return n.squeeze()
 
 
-def uniform_space(box, n):
+def uniform_space(box, n, opt_out=False):
     """
     规则网格剖分.
 
     Parameters
     ----------
-    box
-    n
+    box: array_like
+    n: array_like
+    opt_out: bool
+        whether return options
 
     Returns
     -------
@@ -73,16 +76,26 @@ def uniform_space(box, n):
     box = parse_box(box)
     n = parse_n(n)
 
-    axis_array = np.zeros((n.size, n))
+    opt = {
+        'box': box,
+        'n': n
+    }
+
+    # print(f"{box=}")
+    # print(f"{n=}")
+
+    axis_space = list()
 
     for k, (interval, n0) in enumerate(zip(box, n)):
-        axis_array[k, ...] = np.linspace(*interval, n0)
+        axis_space.append(np.linspace(*interval, n0))
 
     points = np.array(
-        np.meshgrid(*axis_array, indexing='ij')
+        np.meshgrid(*axis_space, indexing='ij')
     ).reshape(n.size, -1)
 
-    return points.T
+    if opt_out is False:
+        return points.T
+    return points.T, opt
 
     # if dim == 1:
     #     points = np.linspace(*box, num=n)
@@ -96,3 +109,37 @@ def uniform_space(box, n):
     #     return Delaunay(points)
     # raise ValueError('Splitting range Error.')
 
+
+# Meta Classes
+# ------------
+
+class MetaMesh(metaclass=abc.ABCMeta):
+    @property
+    @abc.abstractmethod
+    def ndim(self):
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
+    def npoints(self):
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
+    def points(self):
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
+    def nsimplices(self):
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
+    def simplices(self):
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
+    def neighbors(self):
+        raise NotImplementedError

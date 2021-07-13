@@ -9,6 +9,7 @@
 import numpy as np
 
 from fepy.basic import is_ndarray
+from fepy.basic.gaussian import load_gaussian
 from fepy.fem.basic import FEM
 
 
@@ -27,10 +28,10 @@ def area(*points):
 # Classes
 # -------
 
-class FEM1D(FEM):
-    def __init__(self, variation, mesh, boundary):
-        super().__init__(variation, mesh, boundary)
-
+class LinearBasisMixIn(object):
+    """
+    一维线性基函数
+    """
     @staticmethod
     def basis_grid(p, v):
         p = is_ndarray(p).squeeze()
@@ -41,3 +42,11 @@ class FEM1D(FEM):
     def basis_value(p, v):
         grid = np.array([[1], [-1]]) / area(*v)
         return grid.T
+
+
+class LinearFEM1D(LinearBasisMixIn, FEM):
+    def __init__(self, variation, mesh, boundary, gaussian=3):
+        super().__init__(variation, mesh, boundary)
+        self.gaussian = load_gaussian(gaussian, self.ndim)
+
+

@@ -45,11 +45,21 @@ def fslove(a_mat, f_lst):
 # -------
 
 class FEM(metaclass=abc.ABCMeta):
-    def __init__(self, variation, mesh, boundary):
+    def __init__(self, variation, mesh, boundary, gaussian):
+        """
+
+        Parameters
+        ----------
+        mesh: MetaMesh
+        boundary: Boundary
+        gaussian: Gaussian
+        variation: Callable
+        """
+        self.ndim = None
         self.mesh = mesh
         self.boundary = boundary
+        self.gaussian = gaussian
         self.variation = variation
-        self.gaussian = None
         self.f = np.zeros(self.mesh.npoints)
         self.a = np.zeros((self.mesh.npoints, self.mesh.npoints))
 

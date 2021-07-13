@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # @author  : east
 # @time    : 2021/7/10 15:08
-# @file    : mesh1d.py
+# @file    : basic.py
 # @project : fepy
 # software : PyCharm
 
@@ -10,18 +10,18 @@ import abc
 
 import numpy as np
 
-from fepy.mesh.basic import parse_n, parse_box, uniform_space
+from fepy.mesh.basic import uniform_space, MetaMesh
 
 
 # Meta Class
 # ----------
 
-class IntervalMesh(metaclass=abc.ABCMeta):
+class MetaIntervalMesh(MetaMesh, metaclass=abc.ABCMeta):
     def __init__(self, *args, **kwargs):
         self._ndim = 1
         self._points = None
         self._simplices = None
-        self._boundary = None
+        self._neighbors = None
 
     @property
     def ndim(self):
@@ -59,18 +59,19 @@ class IntervalMesh(metaclass=abc.ABCMeta):
         """
         return self._simplices
 
+    @property
+    def neighbors(self):
+        return self._neighbors
+
     @abc.abstractmethod
     def create(self, *args, **kwargs):
-        """
-        更新节点及单纯形.
-        """
         raise NotImplementedError
 
 
 # Classes
 # -------
 
-class UniformIntervalMesh(IntervalMesh):
+class UniformIntervalMesh(MetaIntervalMesh):
     """
     一维规则网格.
     """
@@ -78,16 +79,31 @@ class UniformIntervalMesh(IntervalMesh):
         super().__init__()
         if box is None:
             box = [0, 1]
-        self.create(box, n)
+        self.option = self.create(box, n)
+
+    def __str__(self):
+        return (
+            "<UniformIntervalMesh "
+            f"box:{self.option['box'][0]} "
+            f"n:{self.option['n'][0]}>"
+        )
+
+    def __repr__(self):
+        return self.__str__()
 
     def create(self, box, n):
-        self._points = uniform_space(box, n+1)
+        self._points, option = uniform_space(
+            box, n, opt_out=True
+        )
         self._simplices = np.vstack([
-            np.arange(n), np.arange(1, n+1)
-        ])
-        self._boundary = np.array([0, n])
-
-
-
-
-
+            np.arange(0, n-1),
+            np.arange(1, n)
+        ]).T
+        self._neighbors = np.vstack([
+            np.arange(-1, n-1),
+            np.hstack([
+                np.arange(1, n),
+                -1
+            ]),
+        ]).T
+        return option
