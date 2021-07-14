@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 # @author  : east
-# @time    : 2021/7/10 15:17
-# @file    : main.py
+# @time    : 2021/7/14 12:39
+# @file    : order.py.py
 # @project : fepy
 # software : PyCharm
 
@@ -14,12 +14,11 @@ from fepy.fem.fem1d import LinearFEM1D
 from fepy.mesh.mesh1d import UniformIntervalMesh
 from fepy.boundary.boundary import Dirichlet1D
 
-
 r"""
 1D Laplace Equations Example
 
 .. math::
-    
+
     \begin{cases}
         -\Delta u = \pi^2 \sin(\pi x) \\
         u(0) = u(\pi) = 0
@@ -30,16 +29,15 @@ true solution is
 .. math::
 
     u = \sin(\pi x)
-    
-"""
 
+"""
 
 def u_true(x):
     return np.sin(np.pi * x)
 
 
 def f(x):
-    return np.pi**2 * np.sin(np.pi * x)
+    return np.pi ** 2 * np.sin(np.pi * x)
 
 
 def variation(basis_v, basis_g, gauss_p, gauss_w):
@@ -49,30 +47,28 @@ def variation(basis_v, basis_g, gauss_p, gauss_w):
     return a_elem, f_elem
 
 
-fem = LinearFEM1D(
-    variation=variation,
-    mesh=UniformIntervalMesh(
-        box=[0, 1], n=16+1
-    ),
-    boundary=Dirichlet1D(
-        np.array([0., 0.])
-    ),
-    gaussian_n=3
-)
+error_list = []
 
-fem.run()
+for i in range(1, 12):
+    fem = LinearFEM1D(
+        variation=variation,
+        mesh=UniformIntervalMesh(
+            box=[0, 1], n=2**i + 1
+        ),
+        boundary=Dirichlet1D(
+            np.array([0., 0.])
+        ),
+        gaussian_n=5
+    )
+    fem.run()
 
-# plots
-# -----
+    error_list.append(
+        np.max(np.abs(u_true(fem.mesh.points.squeeze()) - fem.mesh.values))
+    )
 
-fig, ax = plt.subplots(1, 2)
-
-ax[0].plot(fem.mesh.points.squeeze(), fem.mesh.values)
-ax[0].plot(np.linspace(0, 1, 100), u_true(np.linspace(0, 1, 100)), linestyle='--')
-
-ax[1].plot(
-    fem.mesh.points.squeeze(),
-    fem.mesh.values - u_true(fem.mesh.points.squeeze())
-)
-
-plt.show()
+print(f"    error\t   order")
+print(f"{error_list[0]: .4e}\t")
+for i in range(1, len(error_list)):
+    print(
+        f"{error_list[i]: .4e}\t  {np.log2(error_list[i-1] / error_list[i]):.4f}"
+    )
