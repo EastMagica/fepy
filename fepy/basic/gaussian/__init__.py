@@ -6,4 +6,4 @@
 # @project : fepy
 # software : PyCharm
 
-from fepy.basic.gaussian.gaussian import load_gaussian, Gaussian1D
+from fepy.basic.gaussian.gaussian import load_gaussian, Gaussian1D, Gaussian2D

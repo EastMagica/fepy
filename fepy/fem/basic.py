@@ -62,9 +62,8 @@ class FEM(metaclass=abc.ABCMeta):
         self.f = np.zeros(self.mesh.npoints)
         self.a = np.zeros((self.mesh.npoints, self.mesh.npoints))
 
-    @staticmethod
     @abc.abstractmethod
-    def basis_value(p, v, area):
+    def basis_value(self, p, v):
         """
         basis function.
 
@@ -72,7 +71,6 @@ class FEM(metaclass=abc.ABCMeta):
         ----------
         p: any point in element
         v: element point
-        area: area of simplices
 
         Returns
         -------
@@ -80,9 +78,8 @@ class FEM(metaclass=abc.ABCMeta):
         """
         raise NotImplementedError
 
-    @staticmethod
     @abc.abstractmethod
-    def basis_grid(p, v, area):
+    def basis_grid(self, p, v):
         """
         gradiant of basis function.
 
@@ -90,7 +87,6 @@ class FEM(metaclass=abc.ABCMeta):
         ----------
         p: any point in element
         v: element point
-        area: area of simplices
 
         Returns
         -------
@@ -135,13 +131,13 @@ class FEM(metaclass=abc.ABCMeta):
         此处:math:`A_i`的计算方法只针对
         右端项为:math:`\Delta u`的情形.
         """
-        area = self.mesh.area(unit_v)
+        # area = self.mesh.area(unit_v)
         gauss_p, gauss_w = self.gaussian.local_to_global(unit_v, area)
         basis_v = self.basis_value(
-            gauss_p, unit_v, area
+            gauss_p, unit_v
         )
         basis_g = self.basis_grid(
-            gauss_p, unit_v, area
+            gauss_p, unit_v
         )
         a_elem, f_elem = self.variation(
             basis_v, basis_g, gauss_p, gauss_w

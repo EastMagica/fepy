@@ -19,8 +19,8 @@ class LinearBasisMixIn(object):
     """
     一维线性基函数
     """
-    @staticmethod
-    def basis_value(p, v, area):
+
+    def basis_value(self, p, v):
         r"""
 
         .. math::
@@ -31,19 +31,17 @@ class LinearBasisMixIn(object):
         ----------
         p
         v
-        area
 
         Returns
         -------
 
         """
         p = np.asarray(p).squeeze()
-        value = np.array([v[1] - p, p - v[0]]) / area
+        value = np.array([v[1] - p, p - v[0]]) / self.mesh.area(*v)
         return value.T
 
-    @staticmethod
-    def basis_grid(p, v, area):
-        grid = np.array([[1], [-1]]) / area
+    def basis_grid(self, p, v):
+        grid = np.array([[1], [-1]]) / self.mesh.area(*v)
         return grid.T
 
 
