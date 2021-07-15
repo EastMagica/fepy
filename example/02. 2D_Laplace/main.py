@@ -7,6 +7,7 @@
 # software : PyCharm
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from fepy.fem.fem2d import TriLinearFEM2D
 from fepy.mesh.mesh2d import UniformSquareTriMesh
@@ -166,12 +167,7 @@ def u_true(x, y):
 
 
 def variation(basis_v, basis_g, gauss_p, gauss_w):
-    print(f"{basis_v=}")
-    print(f"{basis_g=}")
-    print(f"{gauss_p=}")
-    print(f"{gauss_w=}")
     f_v = f(*gauss_p.T)
-    print(f"{f_v=}")
     f_elem = np.dot(f_v * gauss_w, basis_v)
     a_elem = np.dot(basis_g.T, basis_g) * np.sum(gauss_w)
     return a_elem, f_elem
@@ -183,10 +179,20 @@ def variation(basis_v, basis_g, gauss_p, gauss_w):
 fem = TriLinearFEM2D(
     variation=variation,
     mesh=UniformSquareTriMesh(
-        [[0, 1], [0, 1]], [16+1, 16+1]
+        [[0, 1], [0, 1]], [32 + 1, 32 + 1]
     ),
-    boundary=Dirichlet,
+    boundary=Dirichlet(0.),
     gaussian_n=3
 )
 
 fem.run()
+
+# Plots
+# -----
+ut = u_true(fem.mesh.points[:, 0], fem.mesh.points[:, 1]).reshape(32 + 1, -1)
+error = (
+    ut - fem.mesh.values.reshape(32 + 1, -1)
+)
+print(error)
+
+print("absmax=", np.max(np.abs(error)))

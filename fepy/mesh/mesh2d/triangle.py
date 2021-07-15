@@ -75,7 +75,7 @@ class MetaTriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
     @property
     def boundary_index(self):
         if self._boundary_points is None:
-            find_tri_boundary(self._stri)
+            self._boundary_points = find_tri_boundary(self._stri)
         return self._boundary_points
 
     @staticmethod
@@ -101,6 +101,7 @@ class MetaTriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
             p0, p1, p2 = np.asarray(v[0])
         elif len(v) == 3:
             p0, p1, p2 = [np.asarray(item) for item in v]
+            p0 = p0.T
         else:
             raise ValueError
 
