@@ -149,11 +149,10 @@ class FEM(metaclass=abc.ABCMeta):
     def assembly_af(self):
         r"""组装总矩阵"""
         for k, v in enumerate(self.mesh.simplices):
+            xm, ym = np.meshgrid(v, v)
             a_elem, f_elem = self.construct_af(self.mesh.points[v])
-            for i, vi in enumerate(np.nditer(v)):
-                self.f[vi] += f_elem[i]
-                for j, vj in enumerate(np.nditer(v)):
-                    self.a[vi, vj] += a_elem[i, j]
+            self.f[v] += f_elem[np.newaxis, ...].T
+            self.a[xm, ym] += a_elem
 
     @run_time("RUN FEM")
     def run(self):
