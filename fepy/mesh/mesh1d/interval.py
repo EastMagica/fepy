@@ -101,6 +101,9 @@ class UniformIntervalMesh(MetaIntervalMesh):
     def __repr__(self):
         return self.__str__()
 
+    def get_format_value(self):
+        return self._values
+
     def create(self, box, n):
         self._points, option = uniform_space(
             box, n, opt_out=True

@@ -9,6 +9,7 @@
 import numpy as np
 
 from fepy.fem.basic import FEM
+from fepy.basic.time import run_time
 from fepy.basic.gaussian import Gaussian1D
 
 
@@ -37,15 +38,16 @@ class LinearBasisMixIn(object):
 
         """
         p = np.asarray(p).squeeze()
-        value = np.array([v[1] - p, p - v[0]]) / self.mesh.area(*v)
+        value = np.array([v[1] - p, p - v[0]]) / self.mesh.area(v)
         return value.T
 
     def basis_grid(self, p, v):
-        grid = np.array([[1], [-1]]) / self.mesh.area(*v)
+        grid = np.array([[1], [-1]]) / self.mesh.area(v)
         return grid.T
 
 
 class LinearFEM1D(LinearBasisMixIn, FEM):
+    @run_time("Init LinearFEM1D")
     def __init__(self, variation, mesh, boundary, gaussian_n=3):
         super().__init__(variation, mesh, boundary)
         self.ndim = 1

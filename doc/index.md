@@ -3,14 +3,14 @@
 Finite Element Python Package
 
 - fepy
-  - fem: 有限元流程框架
+  - fem: 有限元流程框架 √
   - mesh: 网格生成框架
-    - 一维网格
+    - 一维网格 √
     - 二维网格
-      - 三角单元
+      - 三角单元 √
       - 矩形单元
   - boundary: 边界处理方法
-    - Dirichlet 边界
+    - Dirichlet 边界 √
     - Neumann 边界
     - Robbin 边界
   - error: 误差估计方法

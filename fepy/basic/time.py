@@ -6,7 +6,24 @@
 # @project : fepy
 # software : PyCharm
 
+import time
 import datetime
+
+
+# Functions
+# ---------
+
+def run_time(module_name):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            t0 = time.perf_counter()
+            solution = func(*args, **kwargs)
+            t1 = time.perf_counter()
+            time_used = t1 - t0
+            print(f">>> {module_name}: {time_used:.2f}s")
+            return solution
+        return wrapper
+    return decorator
 
 
 def get_now(fmt=None):

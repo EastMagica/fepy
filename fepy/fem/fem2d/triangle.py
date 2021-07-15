@@ -9,6 +9,7 @@
 import numpy as np
 
 from fepy.fem.basic import FEM
+from fepy.basic.time import run_time
 from fepy.basic.gaussian import Gaussian2D
 
 
@@ -89,6 +90,7 @@ class TriLinearBasisMixIn(object):
 
 
 class TriLinearFEM2D(TriLinearBasisMixIn, FEM):
+    @run_time("Init TriLinearFEM2D")
     def __init__(self, variation, mesh, boundary, gaussian_n=3):
         super().__init__(variation, mesh, boundary)
         self.ndim = 2

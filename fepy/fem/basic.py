@@ -13,10 +13,13 @@ from scipy.linalg import solve
 from scipy.sparse import dok_matrix
 from scipy.sparse.linalg import spsolve
 
+from fepy.basic.time import run_time
+
 
 # Functions
 # ---------
 
+@run_time("FSolve")
 def fslove(a_mat, f_lst):
     """线性方程组求解器
 
@@ -100,15 +103,6 @@ class FEM(metaclass=abc.ABCMeta):
         """
         raise NotImplementedError
 
-    def assembly_af(self):
-        r"""组装总矩阵"""
-        for k, v in enumerate(self.mesh.simplices):
-            a_elem, f_elem = self.construct_af(self.mesh.points[v])
-            for i, vi in enumerate(np.nditer(v)):
-                self.f[vi] += f_elem[i]
-                for j, vj in enumerate(np.nditer(v)):
-                    self.a[vi, vj] += a_elem[i, j]
-
     def construct_af(self, unit_v):
         r"""构造单元矩阵
 
@@ -151,6 +145,17 @@ class FEM(metaclass=abc.ABCMeta):
         )
         return a_elem, f_elem
 
+    @run_time("Assembly AF")
+    def assembly_af(self):
+        r"""组装总矩阵"""
+        for k, v in enumerate(self.mesh.simplices):
+            a_elem, f_elem = self.construct_af(self.mesh.points[v])
+            for i, vi in enumerate(np.nditer(v)):
+                self.f[vi] += f_elem[i]
+                for j, vj in enumerate(np.nditer(v)):
+                    self.a[vi, vj] += a_elem[i, j]
+
+    @run_time("RUN FEM")
     def run(self):
         r"""
         计算.
@@ -159,11 +164,11 @@ class FEM(metaclass=abc.ABCMeta):
         -------
 
         """
-        print("> Assembly Matrix A and F...")
+        # print("> Assembly Matrix A and F...")
         self.assembly_af()
-        print("> Apply Boundary Conditions...")
+        # print("> Apply Boundary Conditions...")
         self.boundary.process(self.a, self.f, self.mesh)
-        print("> Solve Matrix U...")
+        # print("> Solve Matrix U...")
         self.mesh.values = fslove(self.a, self.f)
 
     def save(self, name='data.xml'):

@@ -187,11 +187,7 @@ fem = TriLinearFEM2D(
     gaussian_n=3
 )
 
-t1 = time.perf_counter()
 fem.run()
-t2 = time.perf_counter()
-
-print(f"clock time: {t2 - t1}")
 
 # Plots
 # -----
