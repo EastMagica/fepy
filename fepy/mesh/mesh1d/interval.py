@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # @author  : east
 # @time    : 2021/7/10 15:08
-# @file    : basic.py
+# @file    : interval.py
 # @project : fepy
 # software : PyCharm
 

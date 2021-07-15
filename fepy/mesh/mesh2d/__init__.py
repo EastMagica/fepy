@@ -5,3 +5,5 @@
 # @file    : __init__.py.py
 # @project : fepy
 # software : PyCharm
+
+from fepy.mesh.mesh2d.triangle import UniformSquareTriMesh

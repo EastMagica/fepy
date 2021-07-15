@@ -5,3 +5,5 @@
 # @file    : __init__.py.py
 # @project : fepy
 # software : PyCharm
+
+from fepy.fem.fem2d.triangle import TriLinearFEM2D

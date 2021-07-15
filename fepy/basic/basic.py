@@ -2,9 +2,6 @@
 # -*- coding:utf-8 -*-
 # @author  : east
 # @time    : 2020/2/5 13:12
-# @file    : basic.py
+# @file    : interval.py
 # @project : fepy
 # software : PyCharm
-
-import numpy as np
-

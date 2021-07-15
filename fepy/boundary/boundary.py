@@ -15,7 +15,7 @@ class Boundary(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
 
-class Dirichlet1D(Boundary):
+class Dirichlet(Boundary):
     def __init__(self, values):
         self.values = values
 

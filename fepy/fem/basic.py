@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # @author  : east
 # @time    : 2020/2/5 13:15
-# @file    : basic.py
+# @file    : interval.py
 # @project : fepy
 # software : PyCharm
 
@@ -131,7 +131,7 @@ class FEM(metaclass=abc.ABCMeta):
         此处:math:`A_i`的计算方法只针对
         右端项为:math:`\Delta u`的情形.
         """
-        # area = self.mesh.area(unit_v)
+        area = self.mesh.area(unit_v)
         gauss_p, gauss_w = self.gaussian.local_to_global(unit_v, area)
         basis_v = self.basis_value(
             gauss_p, unit_v

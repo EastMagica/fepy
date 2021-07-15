@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 from fepy.fem.fem1d import LinearFEM1D
 from fepy.mesh.mesh1d import UniformIntervalMesh
-from fepy.boundary.boundary import Dirichlet1D
+from fepy.boundary.boundary import Dirichlet
 
 
 r"""
@@ -54,7 +54,7 @@ fem = LinearFEM1D(
     mesh=UniformIntervalMesh(
         box=[0, 1], n=16+1
     ),
-    boundary=Dirichlet1D(
+    boundary=Dirichlet(
         np.array([0., 0.])
     ),
     gaussian_n=3

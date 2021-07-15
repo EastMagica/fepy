@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # @author  : east
 # @time    : 2021/7/14 18:57
-# @file    : tri.py
+# @file    : triangle.py
 # @project : fepy
 # software : PyCharm
 
@@ -39,9 +39,8 @@ class TriLinearBasisMixIn(object):
         -------
         basis_v : ndarray, (N, 3)
         """
-        area_v = self.mesh.area(
-            v[0], v[1], v[2]
-        )
+        area_v = self.mesh.area(v)
+        # TODO: fix n points area calc bug.
         basis_v = np.array([
             self.mesh.area(p, v[1], v[2]),
             self.mesh.area(p, v[2], v[0]),
@@ -93,6 +92,6 @@ class TriLinearBasisMixIn(object):
 class TriLinearFEM2D(TriLinearBasisMixIn, FEM):
     def __init__(self, variation, mesh, boundary, gaussian_n=3):
         super().__init__(variation, mesh, boundary)
-        self.ndim = 1
-        print("Load Gaussian in LInear FEM1D")
+        self.ndim = 2
+        print("Load Gaussian in Triangle Linear FEM2D...")
         self.gaussian = Gaussian2D(gaussian_n, self.ndim)

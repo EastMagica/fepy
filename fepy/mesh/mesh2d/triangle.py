@@ -9,6 +9,7 @@
 import abc
 
 import numpy as np
+from scipy.spatial import Delaunay
 
 from fepy.mesh.basic import uniform_space, MetaMesh
 
@@ -16,7 +17,7 @@ from fepy.mesh.basic import uniform_space, MetaMesh
 # Meta Class
 # ----------
 
-class TriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
+class MetaTriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
     """
 
     Attributes
@@ -78,12 +79,12 @@ class TriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
         return self._boundary_points
 
     @staticmethod
-    def area(v):
+    def area(*v):
         r"""计算三角形面积.
 
         Parameters
         ----------
-        v : array_like
+        v : array_like, (3, 2)
             三角单元顶点坐标.
 
         Returns
@@ -96,7 +97,12 @@ class TriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
         若``points``为(3,2)数组, 则可使用``area(*points)``
         直接计算, 无需为对应参数而拆开数组.
         """
-        p0, p1, p2 = np.asarray(v)
+        if len(v) == 1:
+            p0, p1, p2 = np.asarray(v[0])
+        elif len(v) == 3:
+            p0, p1, p2 = [np.asarray(item) for item in v]
+        else:
+            raise ValueError
 
         s = ((p1[0] - p0[0]) * (p2[1] - p0[1]) -
              (p1[1] - p0[1]) * (p2[0] - p0[0])) / 2
@@ -114,17 +120,30 @@ class TriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
 # Classes
 # -------
 
-class UnitSquareMesh(TriangularMesh):
+class UniformSquareTriMesh(MetaTriangularMesh):
     """
     二维规则三角网格.
     """
     def __init__(self, box=None, n=100):
         super().__init__()
-        self.create(box, n)
+        if box is None:
+            box = [[0, 1], [0, 1]]
+        self.option = self.create(box, n)
+
+    def __str__(self):
+        return (
+            "<UniformSquareTriMesh "
+            f"box:{self.option['box']} "
+            f"n:{self.option['n']}>"
+        )
+
+    def __repr__(self):
+        return self.__str__()
 
     def create(self, box, n):
-        # TODO: tri mesh create method
-        self._stri = uniform_space(box, n)
+        points, option = uniform_space(box, n, opt_out=True)
+        self._stri = Delaunay(points)
+        return option
 
 
 # Functions

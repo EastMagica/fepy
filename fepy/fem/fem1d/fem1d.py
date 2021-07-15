@@ -49,5 +49,5 @@ class LinearFEM1D(LinearBasisMixIn, FEM):
     def __init__(self, variation, mesh, boundary, gaussian_n=3):
         super().__init__(variation, mesh, boundary)
         self.ndim = 1
-        print("Load Gaussian in LInear FEM1D")
+        print("Load Gaussian in Linear FEM1D...")
         self.gaussian = Gaussian1D(gaussian_n, self.ndim)

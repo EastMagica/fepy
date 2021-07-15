@@ -6,4 +6,4 @@
 # @project : fepy
 # software : PyCharm
 
-from fepy.mesh.mesh1d.basic import UniformIntervalMesh
+from fepy.mesh.mesh1d.interval import UniformIntervalMesh
