@@ -181,7 +181,7 @@ def variation(basis_v, basis_g, gauss_p, gauss_w):
 fem = TriLinearFEM2D(
     variation=variation,
     mesh=UniformSquareTriMesh(
-        [[0, 1], [0, 1]], [32 + 1, 32 + 1]
+        [[0, 1], [0, 1]], [32 + 1, 32 + 1], 'linspace'
     ),
     boundary=Dirichlet(0.),
     gaussian_n=3
@@ -199,5 +199,38 @@ fem.run()
 # print(f"{error=}")
 # print("abs max=", np.max(np.abs(error)))
 
-plt.imshow(fem.values)
+# fig, ax = plt.subplots(
+#     subplot_kw={
+#         'aspect': 'equal'
+#     }
+# )
+# ax.tripcolor(
+#     fem.mesh.mtri,
+#     fem.mesh.values,
+#     edgecolors='black',
+# )
+# ax.set_xlim(
+#     np.min(fem.mesh.points[:, 0]),
+#     np.max(fem.mesh.points[:, 0])
+# )
+# ax.set_ylim(
+#     np.min(fem.mesh.points[:, 1]),
+#     np.max(fem.mesh.points[:, 1])
+# )
+
+
+fig, ax = plt.subplots(
+    subplot_kw={
+        'proj_type': 'ortho',
+        'projection': '3d'
+    }
+)
+ax.plot_trisurf(
+    fem.mesh.mtri,
+    fem.mesh.values,
+    cmap='YlGnBu_r',
+    linewidth=0.2,
+    antialiased=True
+)
+
 plt.show()

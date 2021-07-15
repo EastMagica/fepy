@@ -58,7 +58,7 @@ def parse_n(n):
     return n.squeeze()
 
 
-def uniform_space(box, n, opt_out=False):
+def uniform_space(box, n, opt_out=False, module='linspace'):
     """
     规则网格剖分.
 
@@ -66,8 +66,10 @@ def uniform_space(box, n, opt_out=False):
     ----------
     box: array_like
     n: array_like
-    opt_out: bool
+    opt_out: bool, optional
         whether return options
+    module: str, optional
+        linspace, uniform
 
     Returns
     -------
@@ -76,38 +78,32 @@ def uniform_space(box, n, opt_out=False):
     box = parse_box(box)
     n = parse_n(n)
 
-    opt = {
-        'box': box,
-        'n': n
-    }
-
-    # print(f"{box=}")
-    # print(f"{n=}")
-
-    axis_space = list()
-
-    for k, (interval, n0) in enumerate(zip(box, n)):
-        axis_space.append(np.linspace(*interval, n0))
+    if module == 'linspace':
+        axis_space = [
+            np.linspace(*interval, n0)
+            for k, (interval, n0) in enumerate(zip(box, n))
+        ]
+    elif module == 'uniform':
+        axis_space = [
+            np.sort(np.random.uniform(*interval, n0))
+            for k, (interval, n0) in enumerate(zip(box, n))
+        ]
+    else:
+        raise ValueError
 
     points = np.array(
         np.meshgrid(*axis_space, indexing='ij')
     ).reshape(n.size, -1)
 
+    opt = {
+        'box': box,
+        'n': n,
+        'axis': axis_space
+    }
+
     if opt_out is False:
         return points.T
     return points.T, opt
-
-    # if dim == 1:
-    #     points = np.linspace(*box, num=n)
-    #     simplices = np.transpose([np.arange(n-1), np.arange(1, n)])
-    #     return points, simplices
-    # if dim == 2:
-    #     x = np.linspace(*box[0], num=n[0])
-    #     y = np.linspace(*box[1], num=n[1])
-    #     x, y = np.meshgrid(x, y)
-    #     points = np.transpose([x.flatten(), y.flatten()])
-    #     return Delaunay(points)
-    # raise ValueError('Splitting range Error.')
 
 
 # Meta Classes

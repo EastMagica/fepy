@@ -10,8 +10,9 @@ import abc
 
 import numpy as np
 from scipy.spatial import Delaunay
+from matplotlib.tri import Triangulation
 
-from fepy.mesh.basic import uniform_space, MetaMesh
+from fepy.mesh.basic import MetaMesh, uniform_space
 
 
 # Meta Class
@@ -86,6 +87,18 @@ class MetaTriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
             self._boundary_edges = find_tri_boundary(self._stri)
         return self._boundary_edges
 
+    @property
+    def stri(self):
+        return self._stri
+
+    @property
+    def mtri(self):
+        return Triangulation(
+            x=self.points[:, 0],
+            y=self.points[:, 1],
+            triangles=self.simplices
+        )
+
     @staticmethod
     def area(*v):
         r"""计算三角形面积.
@@ -134,11 +147,11 @@ class UniformSquareTriMesh(MetaTriangularMesh):
     二维规则三角网格.
     """
 
-    def __init__(self, box=None, n=100):
+    def __init__(self, box=None, n=100, module='linspace'):
         super().__init__()
         if box is None:
             box = [[0, 1], [0, 1]]
-        self.option = self.create(box, n)
+        self.option = self.create(box, n, module)
 
     def __str__(self):
         return (
@@ -153,8 +166,10 @@ class UniformSquareTriMesh(MetaTriangularMesh):
     def get_format_value(self):
         return self._values.reshape(self.option['n'][0], self.option['n'][1])
 
-    def create(self, box, n):
-        points, option = uniform_space(box, n, opt_out=True)
+    def create(self, box, n, module):
+        points, option = uniform_space(
+            box, n, opt_out=True, module=module
+        )
         self._stri = Delaunay(points)
         return option
 

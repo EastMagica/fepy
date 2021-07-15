@@ -34,12 +34,12 @@ class Dirichlet(Boundary):
 
 
 class Neumann(Boundary):
-    def process(self, mat_a, mat_f):
+    def process(self, mat_a, mat_f, mesh):
         ...
 
 
 class Robin(Boundary):
-    def process(self, mat_a, mat_f):
+    def process(self, mat_a, mat_f, mesh):
         ...
 
 
