@@ -38,7 +38,6 @@ class L2Error(ErrorEstimate):
     #             value_calc = np.dot(self.mesh.values[v], basis_v.T)
     #             error_lst[k] = np.sum((value_true - value_calc) ** 2 * gauss_w)
     #     else:
-    #         # TODO: 未知解析结果, 估计误差.
     #         raise NotImplementedError
     #     return error_lst
     #

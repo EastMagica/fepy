@@ -115,7 +115,19 @@ def uniform_space(box, n, opt_out=False):
 
 class MetaMesh(metaclass=abc.ABCMeta):
     def __init__(self):
-        self.values = None
+        self._values = None
+
+    @property
+    def values(self):
+        return self._values
+
+    @values.setter
+    def values(self, data):
+        self._values = data
+
+    @abc.abstractmethod
+    def get_format_value(self):
+        raise NotImplementedError
 
     @property
     @abc.abstractmethod

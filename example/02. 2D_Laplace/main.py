@@ -6,6 +6,8 @@
 # @project : fepy
 # software : PyCharm
 
+import time
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -185,14 +187,21 @@ fem = TriLinearFEM2D(
     gaussian_n=3
 )
 
+t1 = time.perf_counter()
 fem.run()
+t2 = time.perf_counter()
+
+print(f"clock time: {t2 - t1}")
 
 # Plots
 # -----
-ut = u_true(fem.mesh.points[:, 0], fem.mesh.points[:, 1]).reshape(32 + 1, -1)
-error = (
-    ut - fem.mesh.values.reshape(32 + 1, -1)
-)
-print(error)
 
-print("absmax=", np.max(np.abs(error)))
+# ut = u_true(fem.mesh.points[:, 0], fem.mesh.points[:, 1]).reshape(64 + 1, -1)
+# error = (
+#     ut - fem.values
+# )
+# print(f"{error=}")
+# print("abs max=", np.max(np.abs(error)))
+
+plt.imshow(fem.values)
+plt.show()

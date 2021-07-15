@@ -10,6 +10,8 @@ import abc
 
 import numpy as np
 from scipy.linalg import solve
+from scipy.sparse import dok_matrix
+from scipy.sparse.linalg import spsolve
 
 
 # Functions
@@ -18,7 +20,7 @@ from scipy.linalg import solve
 def fslove(a_mat, f_lst):
     """线性方程组求解器
 
-    TODO: 预处理线性方程组, 优化求解速度
+    TODO: 稀疏矩阵线性代数解法, 减少内存占用
 
     Parameters
     ----------
@@ -29,7 +31,7 @@ def fslove(a_mat, f_lst):
     -------
     ndarray
     """
-    return solve(a_mat, f_lst)
+    return spsolve(a_mat.tocsr(), f_lst.tocsr())
 
 
 # Example: Laplace variation
@@ -59,8 +61,12 @@ class FEM(metaclass=abc.ABCMeta):
         self.gaussian = None
         self.boundary = boundary
         self.variation = variation
-        self.f = np.zeros(self.mesh.npoints)
-        self.a = np.zeros((self.mesh.npoints, self.mesh.npoints))
+        self.f = dok_matrix((self.mesh.npoints, 1), dtype=float)
+        self.a = dok_matrix((self.mesh.npoints, self.mesh.npoints), dtype=float)
+
+    @property
+    def values(self):
+        return self.mesh.get_format_value()
 
     @abc.abstractmethod
     def basis_value(self, p, v):
@@ -97,10 +103,11 @@ class FEM(metaclass=abc.ABCMeta):
     def assembly_af(self):
         r"""组装总矩阵"""
         for k, v in enumerate(self.mesh.simplices):
-            xm, ym = np.meshgrid(v, v)
             a_elem, f_elem = self.construct_af(self.mesh.points[v])
-            self.f[v] += f_elem
-            self.a[xm, ym] += a_elem
+            for i, vi in enumerate(np.nditer(v)):
+                self.f[vi] += f_elem[i]
+                for j, vj in enumerate(np.nditer(v)):
+                    self.a[vi, vj] += a_elem[i, j]
 
     def construct_af(self, unit_v):
         r"""构造单元矩阵

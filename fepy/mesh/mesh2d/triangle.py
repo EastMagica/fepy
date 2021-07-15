@@ -30,6 +30,7 @@ class MetaTriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
         super().__init__()
         self._ndim = 2
         self._stri = None
+        self._boundary_edges = None
         self._boundary_points = None
 
     @property
@@ -75,8 +76,15 @@ class MetaTriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
     @property
     def boundary_index(self):
         if self._boundary_points is None:
-            self._boundary_points = find_tri_boundary(self._stri)
+            edges = self.boundary_edge_index.flatten()
+            self._boundary_points = np.unique(edges)
         return self._boundary_points
+
+    @property
+    def boundary_edge_index(self):
+        if self._boundary_edges is None:
+            self._boundary_edges = find_tri_boundary(self._stri)
+        return self._boundary_edges
 
     @staticmethod
     def area(*v):
@@ -125,6 +133,7 @@ class UniformSquareTriMesh(MetaTriangularMesh):
     """
     二维规则三角网格.
     """
+
     def __init__(self, box=None, n=100):
         super().__init__()
         if box is None:
@@ -140,6 +149,9 @@ class UniformSquareTriMesh(MetaTriangularMesh):
 
     def __repr__(self):
         return self.__str__()
+
+    def get_format_value(self):
+        return self._values.reshape(self.option['n'][0], self.option['n'][1])
 
     def create(self, box, n):
         points, option = uniform_space(box, n, opt_out=True)

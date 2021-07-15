@@ -27,7 +27,7 @@ class Dirichlet(Boundary):
         第一类(Dirichlet)边界条件.
         """
         bd_ind = mesh.boundary_index
-        mat_f[bd_ind] = self.values
+        mat_f[bd_ind, ...] = self.values
         mat_a[:, bd_ind] = 0
         mat_a[bd_ind, :] = 0
         mat_a[bd_ind, bd_ind] = 1
