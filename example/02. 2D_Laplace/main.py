@@ -6,14 +6,13 @@
 # @project : fepy
 # software : PyCharm
 
-import time
-
 import numpy as np
 import matplotlib.pyplot as plt
 
 from fepy.fem.fem2d import TriLinearFEM2D
 from fepy.mesh.mesh2d import UniformSquareTriMesh
 from fepy.boundary.boundary import Dirichlet
+from fepy.vision.vision2d.triangle import plot_tri
 
 r"""
 \nabla^2 u(x, y) + \nabla u(x, y) + u(x, y) = f(x, y)
@@ -181,7 +180,7 @@ def variation(basis_v, basis_g, gauss_p, gauss_w):
 fem = TriLinearFEM2D(
     variation=variation,
     mesh=UniformSquareTriMesh(
-        [[0, 1], [0, 1]], [32 + 1, 32 + 1], 'linspace'
+        [[0, 1], [0, 1]], [8 + 1, 8 + 1], 'linspace'
     ),
     boundary=Dirichlet(0.),
     gaussian_n=3
@@ -192,45 +191,6 @@ fem.run()
 # Plots
 # -----
 
-# ut = u_true(fem.mesh.points[:, 0], fem.mesh.points[:, 1]).reshape(64 + 1, -1)
-# error = (
-#     ut - fem.values
-# )
-# print(f"{error=}")
-# print("abs max=", np.max(np.abs(error)))
-
-# fig, ax = plt.subplots(
-#     subplot_kw={
-#         'aspect': 'equal'
-#     }
-# )
-# ax.tripcolor(
-#     fem.mesh.mtri,
-#     fem.mesh.values,
-#     edgecolors='black',
-# )
-# ax.set_xlim(
-#     np.min(fem.mesh.points[:, 0]),
-#     np.max(fem.mesh.points[:, 0])
-# )
-# ax.set_ylim(
-#     np.min(fem.mesh.points[:, 1]),
-#     np.max(fem.mesh.points[:, 1])
-# )
-
-
-fig, ax = plt.subplots(
-    subplot_kw={
-        'proj_type': 'ortho',
-        'projection': '3d'
-    }
-)
-ax.plot_trisurf(
-    fem.mesh.mtri,
-    fem.mesh.values,
-    cmap='YlGnBu_r',
-    linewidth=0.2,
-    antialiased=True
-)
+plot_tri(fem)
 
 plt.show()

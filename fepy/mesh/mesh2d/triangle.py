@@ -12,7 +12,7 @@ import numpy as np
 from scipy.spatial import Delaunay
 from matplotlib.tri import Triangulation
 
-from fepy.mesh.basic import MetaMesh, uniform_space
+from fepy.mesh.basic import MetaMesh, uniform_space, uniform_circle
 
 
 # Meta Class
@@ -27,12 +27,26 @@ class MetaTriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
         scipy.spatial.qull.Delaunay
 
     """
+
+    __classname__ = "MetaTriangularMesh"
+
     def __init__(self):
         super().__init__()
         self._ndim = 2
         self._stri = None
+        self.option = None
         self._boundary_edges = None
         self._boundary_points = None
+
+    def __str__(self):
+        return (
+            f"< {self.__classname__}"
+            f"box:{self.option['box']} "
+            f"n:{self.option['n']}>"
+        )
+
+    def __repr__(self):
+        return self.__str__()
 
     @property
     def ndim(self):
@@ -146,6 +160,7 @@ class UniformSquareTriMesh(MetaTriangularMesh):
     """
     二维规则三角网格.
     """
+    __classname__ = "UniformSquareTriMesh"
 
     def __init__(self, box=None, n=100, module='linspace'):
         super().__init__()
@@ -153,22 +168,35 @@ class UniformSquareTriMesh(MetaTriangularMesh):
             box = [[0, 1], [0, 1]]
         self.option = self.create(box, n, module)
 
-    def __str__(self):
-        return (
-            "<UniformSquareTriMesh "
-            f"box:{self.option['box']} "
-            f"n:{self.option['n']}>"
-        )
-
-    def __repr__(self):
-        return self.__str__()
-
     def get_format_value(self):
         return self._values.reshape(self.option['n'][0], self.option['n'][1])
 
     def create(self, box, n, module):
         points, option = uniform_space(
             box, n, opt_out=True, module=module
+        )
+        self._stri = Delaunay(points)
+        return option
+
+
+class UniformCircleTriMesh(MetaTriangularMesh):
+    """
+    二维规则圆形网格
+    """
+    __classname__ = "UniformCircleTriMesh"
+
+    def __init__(self, radian_n, r_circle=1, center_point=None):
+        super().__init__()
+        if center_point is None:
+            center_point = [0, 0]
+        self.option = self.create(radian_n, r_circle, center_point)
+
+    def get_format_value(self):
+        return self.values
+
+    def create(self, radian_n, r_circle, center_point):
+        points, option = uniform_circle(
+            radian_n, r_circle, center_point, opt_out=True
         )
         self._stri = Delaunay(points)
         return option

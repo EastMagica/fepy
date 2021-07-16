@@ -106,6 +106,58 @@ def uniform_space(box, n, opt_out=False, module='linspace'):
     return points.T, opt
 
 
+def uniform_circle(n_radian, r_circle, center_point, opt_out=True):
+    """
+
+    Parameters
+    ----------
+    n_radian: array_like
+    r_circle: float
+    center_point: array_like
+    opt_out: bool
+
+    Returns
+    -------
+
+    """
+    n_radian = np.asarray(n_radian)
+    center_point = np.asarray(center_point)
+
+    print(f"{center_point=}")
+
+    pointer = 0
+    points = np.zeros(
+        (np.sum(n_radian) + 1, 2),
+        dtype=float
+    )
+
+    n_layer = n_radian.size
+    if isinstance(r_circle, (float, int)):
+        n_radius = np.linspace(r_circle, 0, n_layer+1)[:-1]
+    else:
+        n_radius = np.asarray(r_circle)
+
+    for k_layer, k_radian in enumerate(n_radian):
+        k_radius = n_radius[k_layer]
+        radians = np.linspace(0, 2 * np.pi, k_radian, endpoint=False)
+        points[pointer:pointer+k_radian, ...] = np.transpose([
+            np.cos(radians) * k_radius + center_point[0],
+            np.sin(radians) * k_radius + center_point[1]
+        ])
+        pointer += k_radian
+
+    points[-1, ...] = center_point[0]
+
+    opt = {
+        'r': r_circle,
+        'radian': n_radian,
+    }
+
+    if opt_out is False:
+        return points
+    return points, opt
+
+
 # Meta Classes
 # ------------
 
@@ -120,10 +172,6 @@ class MetaMesh(metaclass=abc.ABCMeta):
     @values.setter
     def values(self, data):
         self._values = data
-
-    @abc.abstractmethod
-    def get_format_value(self):
-        raise NotImplementedError
 
     @property
     @abc.abstractmethod
@@ -153,6 +201,10 @@ class MetaMesh(metaclass=abc.ABCMeta):
     @property
     @abc.abstractmethod
     def neighbors(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_format_value(self):
         raise NotImplementedError
 
     @staticmethod
