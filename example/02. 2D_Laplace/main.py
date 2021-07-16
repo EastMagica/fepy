@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from fepy.fem.fem2d import TriLinearFEM2D
-from fepy.mesh.mesh2d import UniformSquareTriMesh
+from fepy.mesh.mesh2d import UniformSquareTriMesh, RandomSquareTriMesh
 from fepy.boundary.boundary import Dirichlet
 from fepy.vision.vision2d.triangle import plot_tri
 
@@ -179,8 +179,12 @@ def variation(basis_v, basis_g, gauss_p, gauss_w):
 
 fem = TriLinearFEM2D(
     variation=variation,
-    mesh=UniformSquareTriMesh(
-        [[0, 1], [0, 1]], [8 + 1, 8 + 1], 'linspace'
+    # mesh=UniformSquareTriMesh(
+    #     [[0, 1], [0, 1]], [32 + 1, 32 + 1], 'linspace'
+    # ),
+    mesh=RandomSquareTriMesh(
+        box=[[0, 1], [0, 1]],
+        n_points=1024
     ),
     boundary=Dirichlet(0.),
     gaussian_n=3

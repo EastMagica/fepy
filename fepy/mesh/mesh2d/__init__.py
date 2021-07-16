@@ -6,4 +6,6 @@
 # @project : fepy
 # software : PyCharm
 
-from fepy.mesh.mesh2d.triangle import UniformSquareTriMesh, UniformCircleTriMesh
+from fepy.mesh.mesh2d.triangle import (
+    UniformSquareTriMesh, UniformCircleTriMesh, RandomSquareTriMesh
+)

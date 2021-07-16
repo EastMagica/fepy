@@ -44,7 +44,7 @@ fem = TriLinearFEM2D(
     mesh=UniformCircleTriMesh(
         # radian=[32, 24, 24, 16, 12, 8],
         # radius=[1., 0.9, 0.8, 0.7, 0.6, 0.3],
-        radian={12: 64},
+        radian={8: 64},
         radius=1,
         center_point=[0, 0],
     ),

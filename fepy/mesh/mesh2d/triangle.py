@@ -205,6 +205,56 @@ class UniformCircleTriMesh(MetaTriangularMesh):
         return option
 
 
+class RandomSquareTriMesh(MetaTriangularMesh):
+    """
+    二维随机矩形网格
+    """
+    __classname__ = "RandomSquareTriMesh"
+
+    def __init__(self, box=None, n_points=25):
+        super().__init__()
+        if box is None:
+            box = [[0, 1], [0, 1]]
+        self.option = self.create(box, n_points)
+
+    def get_format_value(self):
+        return self.values
+
+    @run_time("Create UniformCircleTriMesh")
+    def create(self, box, n_points):
+        option = {
+            'box': box
+        }
+        points = np.hstack([
+            np.random.uniform(*box[0], (n_points, 1)),
+            np.random.uniform(*box[1], (n_points, 1))
+        ])
+        bnd0 = np.random.uniform(*box[0], (n_points // 10, 1))
+        bnd1 = np.random.uniform(*box[1], (n_points // 10, 1))
+        points = np.vstack([
+            points,
+            np.hstack([
+                bnd0,
+                np.full((n_points // 10, 1), fill_value=box[1][0])
+            ]),
+            np.hstack([
+                bnd0,
+                np.full((n_points // 10, 1), fill_value=box[1][1])
+            ]),
+            np.hstack([
+                bnd1,
+                np.full((n_points // 10, 1), fill_value=box[0][0])
+            ]),
+            np.hstack([
+                bnd1,
+                np.full((n_points // 10, 1), fill_value=box[0][1])
+            ])
+
+        ])
+        self._stri = Delaunay(points)
+        return option
+
+
 # Functions
 # ---------
 
