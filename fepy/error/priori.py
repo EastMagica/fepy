@@ -33,7 +33,10 @@ class MetaPrioriError(metaclass=abc.ABCMeta):
 class L2Error(MetaPrioriError):
     def __init__(self, fem, u_true):
         super().__init__(fem, u_true)
-        self.error_simplices = np.zeros(self.fem.mesh.nsimplices)
+        self.error_simplices = np.zeros(
+            self.fem.mesh.nsimplices,
+            dtype=float
+        )
         self.get_error()
 
     def get_simplices_error(self, unit_p, unit_v):

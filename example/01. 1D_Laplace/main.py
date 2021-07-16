@@ -15,6 +15,7 @@ from fepy.mesh.mesh1d import UniformIntervalMesh
 from fepy.boundary.boundary import Dirichlet
 from fepy.error.priori import L2Error
 from fepy.error.posteriori import L2FError
+from fepy.vision.vision1d import plot_interval
 
 r"""
 1D Laplace Equations Example
@@ -53,7 +54,7 @@ def variation(basis_v, basis_g, gauss_p, gauss_w):
 fem = LinearFEM1D(
     variation=variation,
     mesh=UniformIntervalMesh(
-        box=[0, 1], n=32 + 1
+        box=[0, 1], n=4 + 1
     ),
     boundary=Dirichlet(
         np.array([0., 0.])
@@ -62,6 +63,7 @@ fem = LinearFEM1D(
 )
 
 fem.run()
+print(f"{fem.a.toarray()=}")
 
 err = L2Error(
     fem, u_true
@@ -76,14 +78,6 @@ print(f">>> L2 Error: {err.error: .8e}")
 # plots
 # -----
 
-fig, ax = plt.subplots(1, 2)
-
-ax[0].plot(fem.mesh.points.squeeze(), fem.mesh.values)
-ax[0].plot(np.linspace(0, 1, 100), u_true(np.linspace(0, 1, 100)), linestyle='--')
-
-ax[1].plot(
-    fem.mesh.points.squeeze(),
-    fem.mesh.values - u_true(fem.mesh.points.squeeze())
-)
+plot_interval(fem)
 
 plt.show()

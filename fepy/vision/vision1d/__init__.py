@@ -5,3 +5,5 @@
 # @file    : __init__.py.py
 # @project : fepy
 # software : PyCharm
+
+from fepy.vision.vision1d.interval import plot_interval

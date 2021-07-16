@@ -111,7 +111,7 @@ class UniformIntervalMesh(MetaIntervalMesh):
     def create(self, points, sort=False):
         if sort is True:
             points = np.sort(points)
-        n = points.size - 1
+        n = points.size
 
         self._points = points
         self._simplices = np.vstack([

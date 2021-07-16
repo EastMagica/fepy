@@ -10,6 +10,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+# Functions
+# ---------
+
 def plot_tri(fem):
     fig0, ax0 = init_3d_figure()
     plot_trisurf(ax0, fem)
