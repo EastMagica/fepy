@@ -13,6 +13,7 @@ from scipy.spatial import Delaunay
 from matplotlib.tri import Triangulation
 
 from fepy.mesh.basic import MetaMesh, uniform_space, uniform_circle
+from fepy.basic.time import run_time
 
 
 # Meta Class
@@ -171,6 +172,7 @@ class UniformSquareTriMesh(MetaTriangularMesh):
     def get_format_value(self):
         return self._values.reshape(self.option['n'][0], self.option['n'][1])
 
+    @run_time("Create UniformSquareTriMesh")
     def create(self, box, n, module):
         points, option = uniform_space(
             box, n, opt_out=True, module=module
@@ -185,18 +187,19 @@ class UniformCircleTriMesh(MetaTriangularMesh):
     """
     __classname__ = "UniformCircleTriMesh"
 
-    def __init__(self, radian_n, r_circle=1, center_point=None):
+    def __init__(self, radian, radius=1, center_point=None):
         super().__init__()
         if center_point is None:
             center_point = [0, 0]
-        self.option = self.create(radian_n, r_circle, center_point)
+        self.option = self.create(radian, radius, center_point)
 
     def get_format_value(self):
         return self.values
 
-    def create(self, radian_n, r_circle, center_point):
+    @run_time("Create UniformCircleTriMesh")
+    def create(self, radian, radius, center_point):
         points, option = uniform_circle(
-            radian_n, r_circle, center_point, opt_out=True
+            radian, radius, center_point, opt_out=True
         )
         self._stri = Delaunay(points)
         return option

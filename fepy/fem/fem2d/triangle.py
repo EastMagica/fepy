@@ -94,5 +94,4 @@ class TriLinearFEM2D(TriLinearBasisMixIn, FEM):
     def __init__(self, variation, mesh, boundary, gaussian_n=3):
         super().__init__(variation, mesh, boundary)
         self.ndim = 2
-        print("Load Gaussian in Triangle Linear FEM2D...")
         self.gaussian = Gaussian2D(gaussian_n, self.ndim)

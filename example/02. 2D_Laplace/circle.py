@@ -42,9 +42,11 @@ def variation(basis_v, basis_g, gauss_p, gauss_w):
 fem = TriLinearFEM2D(
     variation=variation,
     mesh=UniformCircleTriMesh(
-        [32, 24, 24, 16, 12, 8],
-        [1., 0.9, 0.8, 0.7, 0.6, 0.3],
-        [0, 0],
+        # radian=[32, 24, 24, 16, 12, 8],
+        # radius=[1., 0.9, 0.8, 0.7, 0.6, 0.3],
+        radian={12: 64},
+        radius=1,
+        center_point=[0, 0],
     ),
     boundary=Dirichlet(0.),
     gaussian_n=3
