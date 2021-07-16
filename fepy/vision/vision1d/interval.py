@@ -49,15 +49,29 @@ def plot_uh(fem, ax):
         fem.mesh.points,
         fem.mesh.values,
         marker='.',
-        label='uh'
+        color='tab:blue',
+        label='uh',
+        zorder=3
     )
 
 
 def plot_u_true(fem, u_true, ax):
     ax.set_title("$u$")
+    x = np.linspace(
+        *fem.mesh.option['box'][0],
+        100
+    )
     ax.plot(
+        x,
+        u_true(x),
+        linestyle='--',
+        label="u true",
+        color='tab:orange',
+        zorder=1
+    )
+    ax.scatter(
         fem.mesh.points,
         u_true(fem.mesh.points),
-        linestyle='--',
-        label="u true"
+        color='tab:orange',
+        zorder=1
     )

@@ -62,10 +62,16 @@ class FEM(metaclass=abc.ABCMeta):
         self.ndim = None
         self.gaussian = None
 
+        self.a = None
+        self.f = None
+
         self.mesh = mesh
         self.boundary = boundary
         self.variation = variation
 
+        self.init_values()
+
+    def init_values(self):
         self.f = dok_matrix((self.mesh.npoints, 1), dtype=float)
         self.a = dok_matrix((self.mesh.npoints, self.mesh.npoints), dtype=float)
 
