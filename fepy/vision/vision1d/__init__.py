@@ -6,4 +6,6 @@
 # @project : fepy
 # software : PyCharm
 
-from fepy.vision.vision1d.interval import plot_interval
+from fepy.vision.vision1d.interval import (
+    plot_interval, plot_interval_err
+)
