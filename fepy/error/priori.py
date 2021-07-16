@@ -18,8 +18,10 @@ class MetaPrioriError(metaclass=abc.ABCMeta):
     def __init__(self, fem, u_true):
         self.fem = fem
         self.u = u_true
+        self._error = None
         self.error_simplices = None
 
+    @property
     @abc.abstractmethod
     def error(self, *args, **kwargs):
         raise NotImplementedError
@@ -56,12 +58,8 @@ class L2Error(MetaPrioriError):
                 unit_p, unit_v
             )
 
-    def error(self, mode='L2'):
-        if mode == 'L2':
-            return np.sqrt(np.sum(self.error_simplices))
-        elif mode == 'max':
-            return np.max(self.error_simplices)
-        elif mode == 'average':
-            return np.average(self.error_simplices)
-        else:
-            raise ValueError
+    @property
+    def error(self):
+        if self._error is None:
+            self._error = np.sqrt(np.sum(self.error_simplices))
+        return self._error

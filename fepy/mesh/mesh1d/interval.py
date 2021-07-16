@@ -77,6 +77,10 @@ class MetaIntervalMesh(MetaMesh, metaclass=abc.ABCMeta):
     def create(self, *args, **kwargs):
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def init_create(self, *args, **kwargs):
+        raise NotImplementedError
+
 
 # Classes
 # -------
@@ -89,7 +93,7 @@ class UniformIntervalMesh(MetaIntervalMesh):
         super().__init__()
         if box is None:
             box = [0, 1]
-        self.option = self.create(box, n)
+        self.option = self.init_create(box, n)
 
     def __str__(self):
         return (
@@ -104,16 +108,18 @@ class UniformIntervalMesh(MetaIntervalMesh):
     def get_format_value(self):
         return self._values
 
-    def create(self, box, n):
-        self._points, option = uniform_space(
-            box, n, opt_out=True
-        )
+    def create(self, points, sort=False):
+        if sort is True:
+            points = np.sort(points)
+        n = points.size - 1
+
+        self._points = points
         self._simplices = np.vstack([
-            np.arange(0, n-1),
+            np.arange(0, n - 1),
             np.arange(1, n)
         ]).T
         self._neighbors = np.vstack([
-            np.arange(-1, n-1),
+            np.arange(-1, n - 1),
             np.hstack([
                 np.arange(1, n),
                 -1
@@ -122,4 +128,10 @@ class UniformIntervalMesh(MetaIntervalMesh):
         self._boundary_points = np.array([
             0, n - 1
         ])
+
+    def init_create(self, box, n):
+        points, option = uniform_space(
+            box, n, opt_out=True
+        )
+        self.create(points)
         return option

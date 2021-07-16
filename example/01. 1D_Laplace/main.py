@@ -14,6 +14,7 @@ from fepy.fem.fem1d import LinearFEM1D
 from fepy.mesh.mesh1d import UniformIntervalMesh
 from fepy.boundary.boundary import Dirichlet
 from fepy.error.priori import L2Error
+from fepy.error.posteriori import L2FError
 
 r"""
 1D Laplace Equations Example
@@ -65,8 +66,12 @@ fem.run()
 err = L2Error(
     fem, u_true
 )
+print(f">>> L2 Error: {err.error: .8e}")
 
-print(f">>> L2 Error: {err.error(): .8e}")
+err = L2FError(
+    fem, f
+)
+print(f">>> L2 Error: {err.error: .8e}")
 
 # plots
 # -----
