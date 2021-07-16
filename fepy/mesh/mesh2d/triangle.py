@@ -92,15 +92,21 @@ class MetaTriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
     @property
     def boundary_index(self):
         if self._boundary_points is None:
-            edges = self.boundary_edge_index.flatten()
-            self._boundary_points = np.unique(edges)
+            self.update_boundary_index()
         return self._boundary_points
+
+    def update_boundary_index(self):
+        edges = self.boundary_edge_index.flatten()
+        self._boundary_points = np.unique(edges)
 
     @property
     def boundary_edge_index(self):
         if self._boundary_edges is None:
-            self._boundary_edges = find_tri_boundary(self._stri)
+            self.update_boundary_edge_index()
         return self._boundary_edges
+
+    def update_boundary_edge_index(self):
+        self._boundary_edges = find_tri_boundary(self._stri)
 
     @property
     def stri(self):
@@ -146,8 +152,14 @@ class MetaTriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
 
         return s
 
+    def create(self, points):
+        self._stri = Delaunay(points)
+        self.update_boundary_edge_index()
+        self.update_boundary_index()
+        print(f"{self.boundary_index.shape=}")
+
     @abc.abstractmethod
-    def create(self, *args, **kwargs):
+    def init_create(self, *args, **kwargs):
         """
         更新节点及单纯形.
         """
@@ -167,17 +179,17 @@ class UniformSquareTriMesh(MetaTriangularMesh):
         super().__init__()
         if box is None:
             box = [[0, 1], [0, 1]]
-        self.option = self.create(box, n, module)
+        self.option = self.init_create(box, n, module)
 
     def get_format_value(self):
         return self._values.reshape(self.option['n'][0], self.option['n'][1])
 
     @run_time("Create UniformSquareTriMesh")
-    def create(self, box, n, module):
+    def init_create(self, box, n, module):
         points, option = uniform_space(
             box, n, opt_out=True, module=module
         )
-        self._stri = Delaunay(points)
+        self.create(points)
         return option
 
 
@@ -191,17 +203,17 @@ class UniformCircleTriMesh(MetaTriangularMesh):
         super().__init__()
         if center_point is None:
             center_point = [0, 0]
-        self.option = self.create(radian, radius, center_point)
+        self.option = self.init_create(radian, radius, center_point)
 
     def get_format_value(self):
         return self.values
 
     @run_time("Create UniformCircleTriMesh")
-    def create(self, radian, radius, center_point):
+    def init_create(self, radian, radius, center_point):
         points, option = uniform_circle(
             radian, radius, center_point, opt_out=True
         )
-        self._stri = Delaunay(points)
+        self.create(points)
         return option
 
 
@@ -215,13 +227,13 @@ class RandomSquareTriMesh(MetaTriangularMesh):
         super().__init__()
         if box is None:
             box = [[0, 1], [0, 1]]
-        self.option = self.create(box, n_points)
+        self.option = self.init_create(box, n_points)
 
     def get_format_value(self):
         return self.values
 
     @run_time("Create UniformCircleTriMesh")
-    def create(self, box, n_points):
+    def init_create(self, box, n_points):
         option = {
             'box': box
         }
@@ -251,7 +263,7 @@ class RandomSquareTriMesh(MetaTriangularMesh):
             ])
 
         ])
-        self._stri = Delaunay(points)
+        self.create(points)
         return option
 
 

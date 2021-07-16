@@ -10,6 +10,7 @@ import abc
 
 import numpy as np
 
+from fepy.basic.time import run_time
 from fepy.mesh.basic import uniform_space, MetaMesh
 
 
@@ -129,6 +130,7 @@ class UniformIntervalMesh(MetaIntervalMesh):
             0, n - 1
         ])
 
+    @run_time("Init UniformIntervalMesh")
     def init_create(self, box, n):
         points, option = uniform_space(
             box, n, opt_out=True
