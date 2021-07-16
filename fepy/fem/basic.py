@@ -60,10 +60,12 @@ class FEM(metaclass=abc.ABCMeta):
         variation: Callable
         """
         self.ndim = None
-        self.mesh = mesh
         self.gaussian = None
+
+        self.mesh = mesh
         self.boundary = boundary
         self.variation = variation
+
         self.f = dok_matrix((self.mesh.npoints, 1), dtype=float)
         self.a = dok_matrix((self.mesh.npoints, self.mesh.npoints), dtype=float)
 

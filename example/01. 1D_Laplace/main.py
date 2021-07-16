@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from fepy.fem.fem1d import LinearFEM1D
 from fepy.mesh.mesh1d import UniformIntervalMesh
 from fepy.boundary.boundary import Dirichlet
-
+from fepy.error.priori import L2Error
 
 r"""
 1D Laplace Equations Example
@@ -39,7 +39,7 @@ def u_true(x):
 
 
 def f(x):
-    return np.pi**2 * np.sin(np.pi * x)
+    return np.pi ** 2 * np.sin(np.pi * x)
 
 
 def variation(basis_v, basis_g, gauss_p, gauss_w):
@@ -52,7 +52,7 @@ def variation(basis_v, basis_g, gauss_p, gauss_w):
 fem = LinearFEM1D(
     variation=variation,
     mesh=UniformIntervalMesh(
-        box=[0, 1], n=16+1
+        box=[0, 1], n=32 + 1
     ),
     boundary=Dirichlet(
         np.array([0., 0.])
@@ -61,6 +61,12 @@ fem = LinearFEM1D(
 )
 
 fem.run()
+
+err = L2Error(
+    fem, u_true
+)
+
+print(f">>> L2 Error: {err.error(): .8e}")
 
 # plots
 # -----

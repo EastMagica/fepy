@@ -8,45 +8,60 @@
 
 import abc
 
+import numpy as np
 
-class ErrorEstimate(metaclass=abc.ABCMeta):
+
+# Meta Class
+# ----------
+
+class MetaPrioriError(metaclass=abc.ABCMeta):
+    def __init__(self, fem, u_true):
+        self.fem = fem
+        self.u = u_true
+        self.error_simplices = None
+
     @abc.abstractmethod
-    def simplices(self):
+    def error(self, *args, **kwargs):
         raise NotImplementedError
 
-    @abc.abstractmethod
-    def error(self):
-        raise NotImplementedError
 
+# Classes
+# -------
 
-class L2Error(ErrorEstimate):
-    def simplices(self):
-        ...
+class L2Error(MetaPrioriError):
+    def __init__(self, fem, u_true):
+        super().__init__(fem, u_true)
+        self.error_simplices = np.zeros(self.fem.mesh.nsimplices)
+        self.get_error()
 
-    def error(self):
-        ...
+    def get_simplices_error(self, unit_p, unit_v):
+        area = self.fem.mesh.area(unit_p)
+        gauss_p, gauss_w = self.fem.gaussian.local_to_global(
+            unit_p, area
+        )
+        basis_v = self.fem.basis_value(
+            gauss_p, unit_p
+        )
+        value_true = self.u(*gauss_p.T)
+        value_calc = np.dot(
+            unit_v, basis_v.T
+        )
+        return np.sum((value_true - value_calc) ** 2 * gauss_w)
 
-    # def error_simplices(self, u_true=None):
-    #     r"""单元误差估计"""
-    #     if u_true:
-    #         error_lst = np.zeros(self.mesh.nsimplices)
-    #         for k, v in enumerate(self.mesh.simplices):
-    #             unit_v = self.mesh.points[v]
-    #             gauss_p, gauss_w = self.gaussian.local_to_global(unit_v)
-    #             basis_v = self.basis_value(gauss_p, unit_v)
-    #             value_true = u_true(*gauss_p.T)
-    #             value_calc = np.dot(self.mesh.values[v], basis_v.T)
-    #             error_lst[k] = np.sum((value_true - value_calc) ** 2 * gauss_w)
-    #     else:
-    #         raise NotImplementedError
-    #     return error_lst
-    #
-    # def error_l2(self):
-    #     r"""L2误差估计
-    #
-    #     Returns
-    #     -------
-    #
-    #     """
-    #     error2 = np.sum(self.error_simplices(self.u_true))
-    #     return np.sqrt(error2)
+    def get_error(self):
+        for k, v in enumerate(self.fem.mesh.simplices):
+            unit_p = self.fem.mesh.points[v]
+            unit_v = self.fem.mesh.values[v]
+            self.error_simplices[k] = self.get_simplices_error(
+                unit_p, unit_v
+            )
+
+    def error(self, mode='L2'):
+        if mode == 'L2':
+            return np.sqrt(np.sum(self.error_simplices))
+        elif mode == 'max':
+            return np.max(self.error_simplices)
+        elif mode == 'average':
+            return np.average(self.error_simplices)
+        else:
+            raise ValueError
