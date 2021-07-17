@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 # @author  : east
-# @time    : 2021/7/16 23:04
-# @file    : main.py
+# @time    : 2021/7/17 10:55
+# @file    : circle.py
 # @project : fepy
 # software : PyCharm
 
@@ -10,23 +10,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from fepy.fem.fem2d import TriLinearFEM2D
-from fepy.mesh.mesh2d import UniformSquareTriMesh, RandomSquareTriMesh
+from fepy.mesh.mesh2d import UniformCircleTriMesh
 from fepy.boundary.boundary import Dirichlet
+from fepy.vision.vision2d.triangle import plot_tri
 from fepy.mesh.mesh2d import AdaptiveTri2D
 from fepy.error.priori import L2Error
 from fepy.error.posteriori import L2FError
-from fepy.vision.vision2d.triangle import plot_tri
 
 
 # Init condition
 # --------------
 
 def f(x, y):
-    return 2 * np.pi ** 2 * np.sin(np.pi * x) * np.sin(np.pi * y)
+    return (
+        4 * np.pi * np.sin(np.pi * (x**2 + y**2))
+        + 4 * np.pi ** 2 * (x**2 + y**2) * np.cos(np.pi * (x ** 2 + y ** 2))
+    )
 
 
 def u_true(x, y):
-    return np.sin(np.pi * x) * np.sin(np.pi * y)
+    return np.sin(np.pi * (x**2 + y**2))
 
 
 def variation(basis_v, basis_g, gauss_p, gauss_w):
@@ -41,13 +44,13 @@ def variation(basis_v, basis_g, gauss_p, gauss_w):
 
 fem = TriLinearFEM2D(
     variation=variation,
-    mesh=UniformSquareTriMesh(
-        [[0, 1], [0, 1]], [4 + 1, 4 + 1], 'linspace'
+    mesh=UniformCircleTriMesh(
+        # radian=[32, 24, 24, 16, 12, 8],
+        # radius=[1., 0.9, 0.8, 0.7, 0.6, 0.3],
+        radian={2: 8},
+        radius=1,
+        center_point=[0, 0],
     ),
-    # mesh=RandomSquareTriMesh(
-    #     box=[[0, 1], [0, 1]],
-    #     n_points=1024
-    # ),
     boundary=Dirichlet(0.),
     gaussian_n=3
 )
@@ -60,17 +63,3 @@ adp = AdaptiveTri2D(
 )
 
 adp.run()
-
-# adp.fem.run()
-# print(f"{fem.mesh.points.size=}")
-# plot_tri(fem)
-#
-# adp.adaptive()
-# print(f"{fem.mesh.points.size=}")
-# plot_tri(fem)
-#
-# adp.adaptive()
-# print(f"{fem.mesh.points.size=}")
-# plot_tri(fem)
-#
-# plt.show()

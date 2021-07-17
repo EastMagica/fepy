@@ -156,7 +156,6 @@ class MetaTriangularMesh(MetaMesh, metaclass=abc.ABCMeta):
         self._stri = Delaunay(points)
         self.update_boundary_edge_index()
         self.update_boundary_index()
-        print(f"{self.boundary_index.shape=}")
 
     @abc.abstractmethod
     def init_create(self, *args, **kwargs):

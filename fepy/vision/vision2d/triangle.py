@@ -13,6 +13,34 @@ import matplotlib.pyplot as plt
 # Functions
 # ---------
 
+def init_adaptive_tri(step):
+    fig1, ax1 = init_2d_figure(
+        2, step,
+        figsize=(2.5 * step, 5),
+        sharex='all',
+        sharey='all',
+    )
+    return fig1, ax1
+
+
+def show_adaptive_tri(figs, fem, err, pointer=0):
+    fig1, ax1 = figs
+
+    plot_triplot(
+        ax1[0, pointer], fem,
+    )
+    plot_tripcolor(
+        ax1[1, pointer], fem
+    )
+
+    title = 'Origin' if pointer == 0 else f"Adaptive {pointer}"
+
+    ax1[0, pointer].set_title(
+        f'{title}\nUse Points: {fem.mesh.points.size}'
+    )
+    ax1[1, pointer].set_title(f'L2 Error: {err.error: .2e}', y=1.03)
+
+
 def plot_tri(fem, points=False):
     fig0, ax0 = init_3d_figure()
     plot_trisurf(ax0, fem)
@@ -23,7 +51,6 @@ def plot_tri(fem, points=False):
         sharey='all',
         figsize=(8, 4)
     )
-
     plot_tripcolor(
         ax1[0], fem
     )
@@ -32,7 +59,7 @@ def plot_tri(fem, points=False):
     )
 
     if points is True:
-        fig1.suptitle(f'Use Points: {fem.mesh.points.size}')
+        ax1[0].set_xlable(f'Use Points: {fem.mesh.points.size}')
 
     plt.show()
 
