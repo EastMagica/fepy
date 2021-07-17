@@ -47,7 +47,7 @@ fem = TriLinearFEM2D(
     mesh=UniformCircleTriMesh(
         # radian=[32, 24, 24, 16, 12, 8],
         # radius=[1., 0.9, 0.8, 0.7, 0.6, 0.3],
-        radian={2: 8},
+        radian=[64, 16],
         radius=1,
         center_point=[0, 0],
     ),
@@ -63,3 +63,5 @@ adp = AdaptiveTri2D(
 )
 
 adp.run()
+
+plot_tri(fem)

@@ -41,6 +41,7 @@ class TriLinearBasisMixIn(object):
         basis_v : ndarray, (N, 3)
         """
         area_v = self.mesh.area(v)
+        # print(f"{area_v=}")
         basis_v = np.array([
             self.mesh.area(p, v[1], v[2]),
             self.mesh.area(p, v[2], v[0]),
