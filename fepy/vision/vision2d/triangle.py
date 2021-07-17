@@ -13,21 +13,33 @@ import matplotlib.pyplot as plt
 # Functions
 # ---------
 
-def plot_tri(fem):
+def plot_tri(fem, points=False):
     fig0, ax0 = init_3d_figure()
     plot_trisurf(ax0, fem)
 
-    fig1, ax1 = init_2d_figure()
-    plot_tripcolor(ax1, fem)
+    fig1, ax1 = init_2d_figure(
+        1, 2,
+        sharex='all',
+        sharey='all',
+        figsize=(8, 4)
+    )
 
-    fig2, ax2 = init_2d_figure()
-    plot_triplot(ax2, fem)
+    plot_tripcolor(
+        ax1[0], fem
+    )
+    plot_triplot(
+        ax1[1], fem,
+    )
+
+    if points is True:
+        fig1.suptitle(f'Use Points: {fem.mesh.points.size}')
 
     plt.show()
 
 
-def init_2d_figure():
+def init_2d_figure(*args, **kwargs):
     fig, ax = plt.subplots(
+        *args, **kwargs,
         subplot_kw={
             'aspect': True
         }
@@ -35,8 +47,9 @@ def init_2d_figure():
     return fig, ax
 
 
-def init_3d_figure():
+def init_3d_figure(*args, **kwargs):
     fig, ax = plt.subplots(
+        *args, **kwargs,
         subplot_kw={
             'proj_type': 'ortho',
             'projection': '3d'
@@ -71,7 +84,8 @@ def plot_tripcolor(ax, fem):
     )
 
 
-def plot_triplot(ax, fem):
+def plot_triplot(ax, fem, title=""):
+    ax.set_title(title)
     ax.triplot(
         fem.mesh.mtri,
         color='tab:blue',
