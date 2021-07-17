@@ -8,9 +8,8 @@
 
 import numpy as np
 
-import matplotlib.pyplot as plt
-
 from fepy.basic.time import run_time
+from fepy.adaptive.basic import MetaAdaptive
 from fepy.vision.vision2d.triangle import init_adaptive_tri, show_adaptive_tri
 
 
@@ -23,19 +22,14 @@ edge_point_index = np.array([[0, 1], [1, 2], [2, 0]], dtype=int)
 # Classes
 # -------
 
-class AdaptiveTri2D(object):
-    def __init__(self, err_class, fem, f, step=3):
-        self.f = f
-        self.fem = fem
-        self.err = None
-        self.err_class = err_class
-        self.step = step
+class AdaptiveTri2D(MetaAdaptive):
+    def __init__(self, fem, f, step=3, err_class=None):
+        super().__init__(fem, f, step, err_class)
         self.figure = init_adaptive_tri(self.step)
 
     @run_time("Adaptive 2D Tri Mesh")
     def adaptive(self):
         error = self.err.error_simplices
-
         index, = np.where(error > np.average(error))
 
         insert_points_index = list()
@@ -46,33 +40,16 @@ class AdaptiveTri2D(object):
             )
 
         insert_points_index = unique_point_index(insert_points_index)
-
         insert_points = np.asarray([
             (self.fem.mesh.points[item[0]] + self.fem.mesh.points[item[1]]) / 2
             for item in insert_points_index
         ])
-
         new_points = np.vstack([
             self.fem.mesh.points,
             insert_points
         ])
-
         self.fem.mesh.create(new_points)
         self.fem.init_values()
-
-    def run(self):
-        self.fem.run()
-        self.err = self.err_class(self.fem, self.f)
-        self.vision(0)
-        print("----------------")
-        for i in range(1, self.step):
-            self.adaptive()
-            self.err = self.err_class(self.fem, self.f)
-            self.fem.run()
-            self.vision(i)
-            print("----------------")
-        # plt.tight_layout()
-        plt.show()
 
     def vision(self, pointer):
         show_adaptive_tri(

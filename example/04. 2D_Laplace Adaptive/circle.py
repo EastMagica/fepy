@@ -13,7 +13,7 @@ from fepy.fem.fem2d import TriLinearFEM2D
 from fepy.mesh.mesh2d import UniformCircleTriMesh
 from fepy.boundary.boundary import Dirichlet
 from fepy.vision.vision2d.triangle import plot_tri
-from fepy.mesh.mesh2d import AdaptiveTri2D
+from fepy.adaptive.tri_adaptive import AdaptiveTri2D
 from fepy.error.priori import L2Error
 from fepy.error.posteriori import L2FError
 
@@ -47,7 +47,7 @@ fem = TriLinearFEM2D(
     mesh=UniformCircleTriMesh(
         # radian=[32, 24, 24, 16, 12, 8],
         # radius=[1., 0.9, 0.8, 0.7, 0.6, 0.3],
-        radian=[64, 16],
+        radian=[32, 16],
         radius=1,
         center_point=[0, 0],
     ),

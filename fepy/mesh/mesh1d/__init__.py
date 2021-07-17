@@ -6,5 +6,4 @@
 # @project : fepy
 # software : PyCharm
 
-from fepy.mesh.mesh1d.adaptive import Adaptive1D
 from fepy.mesh.mesh1d.interval import UniformIntervalMesh

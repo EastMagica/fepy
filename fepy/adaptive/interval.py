@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 # @author  : east
 # @time    : 2021/7/16 20:54
-# @file    : adaptive.py
+# @file    : interval.py
 # @project : fepy
 # software : PyCharm
 

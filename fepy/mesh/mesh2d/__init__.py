@@ -6,7 +6,6 @@
 # @project : fepy
 # software : PyCharm
 
-from fepy.mesh.mesh2d.tri_adaptive import AdaptiveTri2D
 from fepy.mesh.mesh2d.triangle import (
     UniformSquareTriMesh, UniformCircleTriMesh, RandomSquareTriMesh
 )

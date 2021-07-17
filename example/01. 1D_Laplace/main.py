@@ -54,7 +54,7 @@ def variation(basis_v, basis_g, gauss_p, gauss_w):
 fem = LinearFEM1D(
     variation=variation,
     mesh=UniformIntervalMesh(
-        box=[0, 1], n=16 + 1
+        box=[0, 1], n=3 + 1
     ),
     boundary=Dirichlet(
         np.array([0., 0.])
@@ -63,6 +63,9 @@ fem = LinearFEM1D(
 )
 
 fem.run()
+
+print(f"{fem.a.toarray()=}")
+print(f"{fem.f.toarray()=}")
 
 err_per = L2Error(
     fem, u_true
